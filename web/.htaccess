@@ -1,0 +1,12 @@
+SetEnv github_token REPLACE_ME
+
+# Set the default handler.
+DirectoryIndex index.php index.html index.htm
+
+# Various rewrite rules.
+RewriteEngine on
+
+# Full reference to Zend files or directories (Zend directory index is default)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
