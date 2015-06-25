@@ -20,11 +20,11 @@ class Payload
     protected $pullRequest;
     protected $eventType;
 
-    public function __construct($data, $eventType)
+    public function __construct($data, $eventType, $token)
     {
         $this->defaultConfig = array('base_uri' => $this->baseUrl);
         $this->headers = array(
-            'Authorization' => 'token ' . getenv('github_token'),
+            'Authorization' => 'token ' . $token,
             'User-Agent'    => 'Wubots - PHPCS',
             'Content-Type'  => 'application/json',
         );
