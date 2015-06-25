@@ -3,3 +3,4 @@ composer.lock
 payloads
 reports
 vendor
+configs/config.yml
