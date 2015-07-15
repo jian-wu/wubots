@@ -11,10 +11,11 @@ class Payload
     private $headers;
     private $ciContext = 'PHPCS Style Check';
     private $ciStatusDescriptions = array(
-        'pending' => 'Style check commenced.',
-        'error'   => 'Style check reported violations.',
-        'success' => 'Style check passed.',
+        PullRequestStatus::PENDING => 'Style check commenced.',
+        PullRequestStatus::ERROR   => 'Style check reported violations.',
+        PullRequestStatus::SUCCESS => 'Style check passed.',
     );
+    private $ciStatusTargetUrl = 'https://ci.theorchard.io/';
 
     protected $issueComment;
     protected $pullRequest;
@@ -81,7 +82,7 @@ class Payload
         $uri    = $this->getPullRequestUri();
 
         if ($state == 'open' && in_array($action, array('opened', 'synchronize'))) {
-            $this->setBuildStatus($uri, 'pending');
+            $this->setBuildStatus($uri, PullRequestStatus::PENDING);
         }
     }
 
@@ -99,17 +100,18 @@ class Payload
             $pullRequest    = json_decode($this->queryGitHub($pullRequestUrl, 'get', '', ''), true);
             $this->setPullRequest($pullRequest);
             $uri = $this->getPullRequestUri();
-            $this->setBuildStatus($uri, 'pending');
+            $this->setBuildStatus($uri, PullRequestStatus::PENDING);
         }
     }
 
-    protected function setBuildStatus($uri, $status)
+    protected function setBuildStatus($uri, $status, $targetUrl = null)
     {
-        $body = '{
-            "state": "' . $status . '",
-            "description": "' . $this->ciStatusDescriptions[$status] . '",
-            "context": "' . $this->ciContext . '"
-        }';
+        $body = array(
+            'state'       => $status,
+            'description' => $this->ciStatusDescriptions[$status],
+            'context'     => $this->ciContext,
+            'target_url'  => $targetUrl,
+        );
 
         $this->queryGitHub($uri, 'post', $body);
 
